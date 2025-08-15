@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Demo Shop — E-commerce Sample</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#ff4da6;--dark:#1f1f2e;--muted:#666;--bg:#fff7fb}
+  *{box-sizing:border-box} 
+  body{margin:0;font-family:Poppins,system-ui;background:var(--bg);color:var(--dark)}
+  header{position:sticky;top:0;background:#fff;border-bottom:1px solid #eee;z-index:50}
+  .nav{max-width:1100px;margin:auto;display:flex;align-items:center;gap:16px;padding:12px 16px}
+  .brand{font-weight:700;letter-spacing:.3px}
+  .spacer{flex:1}
+  input[type=search]{width:50%;max-width:420px;padding:10px 12px;border:1px solid #ddd;border-radius:8px}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:600}
+  
+  .hero{
+    max-width:1100px;
+    margin:18px auto;
+    padding:24px;
+    border-radius:14px;
+    display:grid;
+    grid-template-columns:1.4fr .6fr;
+    gap:20px;
+    background:linear-gradient(135deg,#fff0f7 0%,#ffffff 100%);
+    box-shadow:0 4px 20px rgba(0,0,0,0.05);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute;
+    top:-40px; right:-40px;
+    width:200px; height:200px;
+    background:radial-gradient(circle,rgba(255,77,166,0.12) 0%,transparent 70%);
+    border-radius:50%;
+  }
+  .hero h1{margin:0 0 8px;font-weight:700}
+  .pill{
+    display:inline-block;background:#ffe1f0;color:#b1005b;
+    padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;
+  }
+  .hero img{
+    width:100%; border-radius:14px; object-fit:cover;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08); transition:transform .4s ease;
+  }
+  .hero img:hover{transform:scale(1.03)}
+  
+ 
+  .grid{
+    max-width:1100px;margin:16px auto;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px; padding:0 8px 24px;
+    justify-items:center; /* center cards when few items */
+  }
+  .card{
+    background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden;
+    display:flex;flex-direction:column;
+    max-width:320px; /* prevents single item from becoming too wide */
+    width:100%;
+    transition:transform .2s ease;
+  }
+  .card:hover{ transform:translateY(-3px) }
+  .card img{
+    width:100%;
+    height:240px;            /* fixed, uniform height */
+    object-fit:cover;        /* no stretching */
+    border-bottom:1px solid #eee;
+  }
+  .card .meta{padding:12px} .price{font-weight:700}
+
+  .tag{
+    font-size:12px;background:#f6f6f9;border-radius:999px;
+    padding:4px 8px;margin-right:6px;transition:.3s ease;
+  }
+  .tag:hover{background:var(--accent);color:#fff;transform:translateY(-2px)}
+  
+  .cart-dock{position:fixed;right:16px;bottom:16px}
+  .cart-fab{border:0;border-radius:999px;padding:14px 16px;background:var(--accent);color:#fff;font-weight:700}
+  .panel{position:fixed;right:0;top:0;height:100%;width:340px;background:#fff;border-left:1px solid #eee;transform:translateX(100%);transition:.25s;z-index:60;display:flex;flex-direction:column}
+  .panel.open{transform:none}
+  .panel header{padding:12px 14px;border-bottom:1px solid #eee}
+  .items{flex:1;overflow:auto;padding:12px}
+  .row{display:flex;align-items:center;gap:8px;border-bottom:1px dashed #eee;padding:8px 0}
+  .row img{width:54px;height:54px;object-fit:cover;border-radius:8px}
+  .qty{display:flex;align-items:center;gap:6px}
+  .panel footer{border-top:1px solid #eee;padding:12px}
+  .muted{color:var(--muted);font-size:13px}
+  .filters{max-width:1100px;margin:0 auto 8px;display:flex;gap:8px;flex-wrap:wrap;padding:0 8px}
+  .filters .chip{padding:8px 12px;border:1px solid #eee;background:#fff;border-radius:999px;cursor:pointer}
+  @media (max-width:800px){
+    .hero{grid-template-columns:1fr}
+    input[type=search]{width:100%}
+  }
+</style>
+
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="brand">Demo Shop</div>
+    <input id="q" type="search" placeholder="Search products…"/>
+    <div class="spacer"></div>
+    <button class="btn" id="openCart">Cart (<span id="cartCount">0</span>)</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <span class="pill">Sample Storefront</span>
+    <h1>Fast, clean & responsive e-commerce UI</h1>
+    <p class="muted">This is a demo for layout/UX only. Payments/checkout can be integrated on request (Stripe, COD, JazzCash, Easypaisa, etc.).</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <span class="tag">Product Grid</span>
+      <span class="tag">Quick View</span>
+      <span class="tag">Local Cart</span>
+      <span class="tag">Filters</span>
+      <span class="tag">Responsive</span>
+    </div>
+  </div>
+  <img src="https://images.unsplash.com/photo-1520975916090-3105956dac38?q=80&w=1200&auto=format&fit=crop" alt="Hero" style="width:100%;border-radius:14px;object-fit:cover">
+</section>
+
+<div class="filters" id="filters"></div>
+
+<main class="grid" id="grid"></main>
+
+<!-- Cart Panel -->
+<aside class="panel" id="panel">
+  <header><strong>Your Cart</strong></header>
+  <div class="items" id="items"></div>
+  <footer>
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <span>Subtotal</span><strong id="subtotal">Rs 0</strong>
+    </div>
+    <button class="btn" id="checkoutBtn" title="Placeholder only">Proceed to Checkout</button>
+    <div class="muted" style="margin-top:6px">* Demo only — checkout disabled in sample.</div>
+  </footer>
+</aside>
+
+<div class="cart-dock">
+  <button class="cart-fab" id="fab">🛒 <span id="fabCount">0</span></button>
+</div>
+
+<script>
+const PRODUCTS = [
+  {id:1, name:"Floral Summer Dress", price:4999, cat:"Fashion", img:"images/Floral Summer Dress.jpg"},
+  {id:2, name:"Wireless Earbuds", price:6999, cat:"Electronics", img:"images/Wireless Earbuds.jpg"},
+  {id:3, name:"Matte Lipstick", price:1499, cat:"Beauty", img:"images/Matte Lipstick.jpg"},
+  {id:4, name:"Sports Sneakers", price:8999, cat:"Fashion", img:"images/Sports Sneakers.jpg"},
+  {id:5, name:"Ceramic Mug Set", price:1999, cat:"Home", img:"images/Ceramic Mug Set.jpg"},
+  {id:6, name:"Gaming Mouse", price:3499, cat:"Electronics", img:"images/Gaming Mouse.jpg"},
+  {id:7, name:"Skincare Serum", price:2599, cat:"Beauty", img:"images/Skincare Serum.jpg"},
+  {id:8, name:"Minimal Backpack", price:5599, cat:"Fashion", img:"images/Minimal Backpack.jpg"}
+];
+
+const cats=[...new Set(PRODUCTS.map(p=>p.cat))];
+const grid=document.getElementById('grid');
+const filters=document.getElementById('filters');
+const q=document.getElementById('q');
+const panel=document.getElementById('panel');
+const itemsEl=document.getElementById('items');
+const subtotalEl=document.getElementById('subtotal');
+const cartCount=document.getElementById('cartCount');
+const fabCount=document.getElementById('fabCount');
+const openCartBtn=document.getElementById('openCart');
+const fab=document.getElementById('fab');
+
+let cart = JSON.parse(localStorage.getItem('demo_cart') || '{}');
+
+function format(n){ return "Rs " + n.toLocaleString('en-PK'); }
+
+function renderFilters(){
+  const all = document.createElement('button');
+  all.className='chip'; all.textContent='All';
+  all.onclick=()=>renderGrid(PRODUCTS);
+  filters.appendChild(all);
+  cats.forEach(c=>{
+    const b=document.createElement('button'); b.className='chip'; b.textContent=c;
+    b.onclick=()=>renderGrid(PRODUCTS.filter(p=>p.cat===c));
+    filters.appendChild(b);
+  });
+}
+
+function renderGrid(list){
+  grid.innerHTML='';
+  list.forEach(p=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`
+      <img src="${p.img}" alt="${p.name}">
+      <div class="meta">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+          <strong>${p.name}</strong><span class="price">${format(p.price)}</span>
+        </div>
+        <div class="muted" style="margin:6px 0">${p.cat}</div>
+        <button class="btn" data-id="${p.id}">Add to Cart</button>
+      </div>`;
+    card.querySelector('button').onclick=()=>addToCart(p.id);
+    grid.appendChild(card);
+  });
+}
+
+function addToCart(id){
+  cart[id]=(cart[id]||0)+1;
+  persist(); renderCart(); bump();
+}
+
+function removeOne(id){
+  if(cart[id]){ cart[id]-=1; if(cart[id]<=0) delete cart[id]; persist(); renderCart(); }
+}
+
+function persist(){ localStorage.setItem('demo_cart', JSON.stringify(cart)); }
+
+function renderCart(){
+  itemsEl.innerHTML='';
+  let total=0, count=0;
+  Object.entries(cart).forEach(([id,qty])=>{
+    const p=PRODUCTS.find(x=>x.id==id); if(!p) return;
+    total += p.price*qty; count += qty;
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`
+      <img src="${p.img}" alt="${p.name}">
+      <div style="flex:1">
+        <div><strong>${p.name}</strong></div>
+        <div class="muted">${format(p.price)} × ${qty}</div>
+      </div>
+      <div class="qty">
+        <button class="btn" style="padding:6px 10px" aria-label="Decrease">−</button>
+        <span>${qty}</span>
+        <button class="btn" style="padding:6px 10px" aria-label="Increase">+</button>
+      </div>`;
+    const [dec,,inc]=row.querySelectorAll('button');
+    dec.onclick=()=>removeOne(p.id);
+    inc.onclick=()=>addToCart(p.id);
+    itemsEl.appendChild(row);
+  });
+  subtotalEl.textContent=format(total);
+  cartCount.textContent=count;
+  fabCount.textContent=count;
+}
+
+function bump(){ fab.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:220}); }
+
+q.addEventListener('input',()=>{
+  const s=q.value.toLowerCase();
+  renderGrid(PRODUCTS.filter(p=>p.name.toLowerCase().includes(s)));
+});
+
+document.getElementById('checkoutBtn').onclick=()=>alert('Demo checkout is disabled in sample. Full checkout is available in production builds.');
+document.getElementById('openCart').onclick=()=>panel.classList.add('open');
+fab.onclick=()=>panel.classList.toggle('open');
+
+renderFilters();
+renderGrid(PRODUCTS);
+renderCart();
+</script>
+
+<footer style="max-width:1100px;margin:24px auto;padding:0 8px 40px">
+  <h3>Included in this Sample</h3>
+  <ul>
+    <li>Responsive layout (mobile-first)</li>
+    <li>Search + category filters</li>
+    <li>LocalStorage based cart</li>
+    <li>Quick, clean UI ready for brand customization</li>
+  </ul>
+  <p class="muted">Need: admin panel, inventory, orders, payments, shipping, coupons, multi-vendor? — Available on request.</p>
+</footer>
+</body>
+</html>
